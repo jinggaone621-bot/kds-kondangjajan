@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KDS - Kondangjajan Dapur V.2</title>
+    <style>
+        body { background: #111827; color: #f9fafb; font-family: 'Segoe UI', sans-serif; display: grid; grid-template-columns: 2fr 1fr; height: 100vh; margin: 0; overflow: hidden; }
+        
+        .order-panel { padding: 25px; overflow-y: auto; background: linear-gradient(180deg, #111827 0%, #1f2937 100%); }
+        .order-panel h2 { font-size: 24px; font-weight: 800; margin-top: 0; border-bottom: 2px solid #374151; padding-bottom: 15px; color: #10B981; display: flex; justify-content: space-between; }
+        
+        .card { background: #374151; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 6px solid #10B981; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
+        .card.urgent { border-left-color: #ef4444; animation: blink 2s infinite; }
+        @keyframes blink { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        
+        .card-header { display: flex; justify-content: space-between; color: #9ca3af; font-size: 14px; font-weight: 600; margin-bottom: 10px; border-bottom: 1px dashed #4b5563; padding-bottom: 10px; }
+        .item-list { font-size: 20px; font-weight: bold; margin: 15px 0; line-height: 1.6; }
+        
+        .tools-panel { padding: 25px; background: #1f2937; border-left: 1px solid #374151; display: flex; flex-direction: column; }
+        .tools-panel h2 { font-size: 20px; font-weight: 800; margin-top: 0; border-bottom: 2px solid #4b5563; padding-bottom: 15px; color: #D4AF37; }
+        
+        .btn { padding: 18px; width: 100%; border: none; border-radius: 10px; font-weight: 800; font-size: 16px; margin-bottom: 15px; cursor: pointer; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-green { background: #10B981; color: white; }
+        .btn-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 2px solid #ef4444; }
+        .btn-blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 2px solid #3b82f6; }
+
+        .loss-journal { margin-top: 20px; flex: 1; background: #111827; border-radius: 10px; padding: 15px; border: 1px solid #374151; overflow-y: auto; }
+        .loss-journal h3 { margin: 0 0 15px 0; font-size: 14px; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; }
+        .log-item { background: #1f2937; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 13px; border-left: 3px solid #ef4444; }
+        .log-money { color: #ef4444; font-weight: bold; font-size: 15px; float: right; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: #1f2937; width: 90%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid #374151; }
+        .modal-content h3 { margin: 0 0 20px 0; font-size: 24px; color: #3b82f6; border-bottom: 1px dashed #4b5563; padding-bottom: 10px; }
+        .modal-content.red-theme h3 { color: #ef4444; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 5px; font-weight: 600; }
+        .kitchen-input { width: 100%; padding: 15px; background: #111827; border: 2px solid #4b5563; border-radius: 8px; color: white; font-size: 16px; font-weight: 700; box-sizing: border-box; outline: none; }
+        .kitchen-input:focus { border-color: #3b82f6; }
+        
+        .alert-box { background: rgba(239, 68, 68, 0.1); border: 1px dashed #ef4444; padding: 15px; border-radius: 8px; margin: 20px 0; display: none; }
+        .alert-box span { display: block; font-size: 12px; color: #9ca3af; }
+        .alert-box .amount { font-size: 22px; font-weight: 800; color: #ef4444; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- Panel Antrean (Kiri) -->
+    <div class="order-panel">
+        <h2>🔥 Antrean Masak <span>2 Antrean</span></h2>
+        
+        <div class="card urgent">
+            <div class="card-header"><span>#KNDG-1029 (Ojol)</span><span style="color:#ef4444;">🔴 Telat (12 Menit)</span></div>
+            <div class="item-list">3x Koyo Chikuro Original<br><span style="font-size:14px; color:#9ca3af;">Catatan: Bumbu pisah ya bang</span></div>
+            <button class="btn btn-green" onclick="this.parentElement.style.display='none'">Selesai Dimasak</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><span>#KNDG-1030 (Dine-in)</span><span style="color:#10B981;">🟢 Baru (2 Menit)</span></div>
+            <div class="item-list">1x Nasi Telur Crispy<br>1x Es Teh Sojo</div>
+            <button class="btn btn-green" onclick="this.parentElement.style.display='none'">Selesai Dimasak</button>
+        </div>
+    </div>
+
+    <!-- Panel Kontrol (Kanan) -->
+    <div class="tools-panel">
+        <h2>⚙️ Kontrol Dapur</h2>
+        <button class="btn btn-red" onclick="document.getElementById('modal-wastage').style.display='flex'">🗑️ Lapor Bahan Rusak (Wastage)</button>
+        <button class="btn btn-blue" onclick="bukaModalOpname()">📝 Hitung Stok (Tutup Toko)</button>
+        
+        <div class="loss-journal">
+            <h3>Jurnal Beban Kerugian Harian</h3>
+            <div id="journal-list"><div style="color: #6b7280; font-size: 12px; text-align: center; margin-top: 50px;">Belum ada kerugian tercatat.</div></div>
+            <div style="border-top: 1px solid #374151; margin-top: 15px; padding-top: 10px; display: flex; justify-content: space-between; font-weight: bold;">
+                <span>TOTAL KERUGIAN:</span>
+                <span id="total-loss-hari-ini" style="color:#ef4444;">Rp0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: WASTAGE -->
+    <div class="modal-overlay" id="modal-wastage">
+        <div class="modal-content red-theme">
+            <h3>Laporan Barang Buangan</h3>
+            <div class="form-group">
+                <label>Pilih Bahan Baku</label>
+                <select id="waste-item" class="kitchen-input">
+                    <option value="RM-01" data-hpp="40">Ayam Giling (Gram)</option>
+                    <option value="RM-02" data-hpp="100">Keju Lumer (Gram)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Jumlah Dibuang (Angka)</label><input type="number" id="waste-qty" class="kitchen-input"></div>
+            <div class="form-group">
+                <label>Alasan</label>
+                <select id="waste-reason" class="kitchen-input">
+                    <option>Gosong / Salah Masak</option><option>Jatuh / Tumpah</option><option>Basi / Expired</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn" style="background: #374151; color: white;" onclick="document.getElementById('modal-wastage').style.display='none'">Batal</button>
+                <button class="btn btn-red" style="margin-bottom: 0;" onclick="simpanWastage()">Catat Kerugian</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: BLIND OPNAME (INNOVATION) -->
+    <div class="modal-overlay" id="modal-opname">
+        <div class="modal-content">
+            <h3>Blind Opname (Hitung Fisik)</h3>
+            <p style="font-size: 12px; color:#9ca3af; margin-top:-10px; line-height:1.5;">Timbang bahan baku yang tersisa di dapur sekarang. Sistem akan mencocokkan otomatis dengan data penjualan (Auto-Deduct).</p>
+            
+            <div class="form-group">
+                <label>Pilih Bahan Baku yang Ditimbang</label>
+                <select id="opname-item" class="kitchen-input">
+                    <option value="" disabled selected>-- Pilih Bahan --</option>
+                    <!-- SIMULASI: Sistem rahasia berekspektasi sisa ayam adalah 2500 gram -->
+                    <option value="RM-01" data-hpp="40" data-expected="2500">Ayam Giling (Gram)</option>
+                    <option value="RM-02" data-hpp="100" data-expected="800">Keju Lumer (Gram)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Hasil Timbangan Aktual (Fisik Asli)</label>
+                <input type="number" id="opname-qty" class="kitchen-input" placeholder="Berapa gram sisanya?">
+            </div>
+
+            <div class="alert-box" id="opname-alert">
+                <span>⚠️ PERINGATAN SELISIH STOK (KEBOCORAN)</span>
+                <div id="alert-msg" style="font-size: 13px; color: white; margin-top:5px;">Ayam kurang 400 gram dari sistem!</div>
+                <div class="amount" id="alert-loss">Kerugian: Rp16.000</div>
+                <span style="margin-top: 8px; color: #fbbf24;">Laporan ini otomatis dikirim ke Owner!</span>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;" id="btn-opname-group">
+                <button class="btn" style="background: #374151; color: white;" onclick="tutupOpname()">Batal</button>
+                <button class="btn btn-blue" style="margin-bottom: 0;" onclick="eksekusiOpname()">Kirim Laporan Tutup Toko</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let totalKerugianHarian = 0;
+        function formatRp(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
+
+        function simpanWastage() {
+            let select = document.getElementById("waste-item");
+            let qty = parseFloat(document.getElementById("waste-qty").value);
+            let reason = document.getElementById("waste-reason").value;
+
+            if(isNaN(qty) || qty <= 0) return alert("Masukkan jumlah!");
+            
+            let hpp = parseFloat(select.options[select.selectedIndex].getAttribute("data-hpp"));
+            let nilaiRugi = hpp * qty;
+            let nama = select.options[select.selectedIndex].text;
+            let jam = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+
+            if(totalKerugianHarian === 0) document.getElementById("journal-list").innerHTML = "";
+            document.getElementById("journal-list").innerHTML += `<div class="log-item"><div class="log-money">-${formatRp(nilaiRugi)}</div><div style="font-weight: bold; color: white;">${nama} (${qty})</div><div style="color: #9ca3af; margin-top: 4px;">🕒 ${jam} | 🚨 ${reason}</div></div>`;
+            
+            totalKerugianHarian += nilaiRugi;
+            document.getElementById("total-loss-hari-ini").innerText = formatRp(totalKerugianHarian);
+            
+            let opnameOption = document.querySelector(`#opname-item option[value="${select.value}"]`);
+            if(opnameOption) {
+                let currentExpected = parseFloat(opnameOption.getAttribute("data-expected"));
+                opnameOption.setAttribute("data-expected", currentExpected - qty);
+            }
+
+            document.getElementById("modal-wastage").style.display = "none";
+            document.getElementById("waste-qty").value = "";
+        }
+
+        function bukaModalOpname() {
+            document.getElementById("modal-opname").style.display = "flex";
+            document.getElementById("opname-alert").style.display = "none";
+            document.getElementById("btn-opname-group").style.display = "flex";
+            document.getElementById("opname-qty").value = "";
+            document.getElementById("opname-item").selectedIndex = 0;
+        }
+
+        function tutupOpname() { document.getElementById("modal-opname").style.display = "none"; }
+
+        function eksekusiOpname() {
+            let select = document.getElementById("opname-item");
+            let aktualQty = parseFloat(document.getElementById("opname-qty").value);
+            
+            if(select.selectedIndex === 0 || isNaN(aktualQty)) return alert("Pilih bahan dan masukkan hasil timbangan!");
+
+            let expectedQty = parseFloat(select.options[select.selectedIndex].getAttribute("data-expected"));
+            let hpp = parseFloat(select.options[select.selectedIndex].getAttribute("data-hpp"));
+            let nama = select.options[select.selectedIndex].text;
+            let selisih = aktualQty - expectedQty;
+
+            if (selisih === 0) {
+                alert("Laporan Terkirim. Stok Balance (Aman)!");
+                tutupOpname();
+            } else if (selisih < 0) {
+                let kerugianUang = Math.abs(selisih) * hpp;
+                document.getElementById("alert-msg").innerText = `⚠️ FISIK KURANG! Sistem = ${expectedQty}, Fisik = ${aktualQty} (Selisih: ${selisih})`;
+                document.getElementById("alert-loss").innerText = `Uang Menguap: ${formatRp(kerugianUang)}`;
+                
+                document.getElementById("opname-alert").style.display = "block";
+                document.getElementById("btn-opname-group").style.display = "none";
+                
+                if(totalKerugianHarian === 0) document.getElementById("journal-list").innerHTML = "";
+                document.getElementById("journal-list").innerHTML += `<div class="log-item" style="border-left-color: #f59e0b;"><div class="log-money" style="color:#f59e0b;">-${formatRp(kerugianUang)}</div><div style="font-weight: bold; color: white;">Selisih Opname: ${nama}</div><div style="color: #9ca3af; margin-top: 4px;">🕵️ Kurang ${Math.abs(selisih)}</div></div>`;
+                
+                totalKerugianHarian += kerugianUang;
+                document.getElementById("total-loss-hari-ini").innerText = formatRp(totalKerugianHarian);
+
+                setTimeout(() => { alert("Terdapat selisih stok! Investigasi akan dilakukan oleh Owner."); tutupOpname(); }, 4000);
+            } else {
+                alert(`⚠️ FISIK BERLEBIH! (Selisih +${selisih}). Laporan dikirim ke owner untuk evaluasi porsi koki.`);
+                tutupOpname();
+            }
+        }
+    </script>
+</body>
+</html>
