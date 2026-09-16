@@ -2,221 +2,236 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KDS - Kondangjajan Dapur V.2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kondang POS - Master System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Courier+Prime&display=swap" rel="stylesheet">
     <style>
-        body { background: #111827; color: #f9fafb; font-family: 'Segoe UI', sans-serif; display: grid; grid-template-columns: 2fr 1fr; height: 100vh; margin: 0; overflow: hidden; }
-        
-        .order-panel { padding: 25px; overflow-y: auto; background: linear-gradient(180deg, #111827 0%, #1f2937 100%); }
-        .order-panel h2 { font-size: 24px; font-weight: 800; margin-top: 0; border-bottom: 2px solid #374151; padding-bottom: 15px; color: #10B981; display: flex; justify-content: space-between; }
-        
-        .card { background: #374151; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 6px solid #10B981; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); }
-        .card.urgent { border-left-color: #ef4444; animation: blink 2s infinite; }
-        @keyframes blink { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 50% { box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        
-        .card-header { display: flex; justify-content: space-between; color: #9ca3af; font-size: 14px; font-weight: 600; margin-bottom: 10px; border-bottom: 1px dashed #4b5563; padding-bottom: 10px; }
-        .item-list { font-size: 20px; font-weight: bold; margin: 15px 0; line-height: 1.6; }
-        
-        .tools-panel { padding: 25px; background: #1f2937; border-left: 1px solid #374151; display: flex; flex-direction: column; }
-        .tools-panel h2 { font-size: 20px; font-weight: 800; margin-top: 0; border-bottom: 2px solid #4b5563; padding-bottom: 15px; color: #D4AF37; }
-        
-        .btn { padding: 18px; width: 100%; border: none; border-radius: 10px; font-weight: 800; font-size: 16px; margin-bottom: 15px; cursor: pointer; transition: transform 0.1s; }
-        .btn:active { transform: scale(0.97); }
-        .btn-green { background: #10B981; color: white; }
-        .btn-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 2px solid #ef4444; }
-        .btn-blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 2px solid #3b82f6; }
-
-        .loss-journal { margin-top: 20px; flex: 1; background: #111827; border-radius: 10px; padding: 15px; border: 1px solid #374151; overflow-y: auto; }
-        .loss-journal h3 { margin: 0 0 15px 0; font-size: 14px; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; }
-        .log-item { background: #1f2937; padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 13px; border-left: 3px solid #ef4444; }
-        .log-money { color: #ef4444; font-weight: bold; font-size: 15px; float: right; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: #1f2937; width: 90%; max-width: 500px; border-radius: 16px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid #374151; }
-        .modal-content h3 { margin: 0 0 20px 0; font-size: 24px; color: #3b82f6; border-bottom: 1px dashed #4b5563; padding-bottom: 10px; }
-        .modal-content.red-theme h3 { color: #ef4444; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; color: #9ca3af; margin-bottom: 5px; font-weight: 600; }
-        .kitchen-input { width: 100%; padding: 15px; background: #111827; border: 2px solid #4b5563; border-radius: 8px; color: white; font-size: 16px; font-weight: 700; box-sizing: border-box; outline: none; }
-        .kitchen-input:focus { border-color: #3b82f6; }
-        
-        .alert-box { background: rgba(239, 68, 68, 0.1); border: 1px dashed #ef4444; padding: 15px; border-radius: 8px; margin: 20px 0; display: none; }
-        .alert-box span { display: block; font-size: 12px; color: #9ca3af; }
-        .alert-box .amount { font-size: 22px; font-weight: 800; color: #ef4444; margin-top: 5px; }
+        :root { --primary: #10B981; --dark: #111827; --gray: #f3f4f6; --text: #374151; --red: #ef4444; --gold: #D4AF37; }
+        body { font-family: 'Inter', sans-serif; background: #e5e7eb; margin: 0; display: flex; height: 100vh; overflow: hidden; color: var(--text); }
+        .main-content { flex: 2.5; display: flex; flex-direction: column; background: var(--gray); }
+        .sidebar-cart { flex: 1; min-width: 350px; background: white; border-left: 1px solid #d1d5db; display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.05); z-index: 10; }
+        .top-nav { background: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 5; }
+        .brand { font-size: 20px; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 10px; }
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-blue { background: #3b82f6; color: white; }
+        .btn-green { background: var(--primary); color: white; }
+        .btn-red { background: rgba(239, 68, 68, 0.1); color: var(--red); }
+        .menu-area { padding: 25px; overflow-y: auto; flex: 1; }
+        .category-title { font-size: 18px; font-weight: 800; margin-bottom: 15px; color: var(--dark); }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .menu-card { background: white; border-radius: 12px; padding: 15px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border: 2px solid transparent; transition: all 0.2s; display: flex; flex-direction: column; justify-content: space-between; min-height: 100px; }
+        .menu-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 15px rgba(16, 185, 129, 0.1); }
+        .menu-card.disabled { opacity: 0.5; cursor: not-allowed; border-color: transparent; }
+        .m-name { font-weight: 800; font-size: 15px; margin-bottom: 5px; line-height: 1.3; }
+        .m-price { color: var(--primary); font-weight: 800; font-size: 14px; }
+        .m-stock { font-size: 11px; color: #6b7280; margin-top: 8px; }
+        .cart-header { padding: 20px; border-bottom: 1px solid #e5e7eb; font-weight: 800; font-size: 18px; display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 15px; background: #fafafa; }
+        .cart-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+        .ci-info { display: flex; flex-direction: column; }
+        .ci-name { font-weight: 700; font-size: 14px; margin-bottom: 5px; }
+        .ci-price { color: var(--red); font-weight: 800; font-size: 13px; }
+        .qty-control { display: flex; align-items: center; gap: 10px; background: var(--gray); border-radius: 8px; padding: 4px; }
+        .qty-btn { background: white; border: none; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .qty-num { font-weight: 800; font-size: 14px; min-width: 20px; text-align: center; }
+        .cart-footer { padding: 20px; background: white; border-top: 1px solid #e5e7eb; box-shadow: 0 -5px 10px rgba(0,0,0,0.02); }
+        .total-row { display: flex; justify-content: space-between; font-size: 24px; font-weight: 800; margin-bottom: 15px; }
+        .printer-status { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
+        .status-off { background: #fee2e2; color: #ef4444; }
+        .status-on { background: #d1fae5; color: #10B981; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .inventory-list { font-family: 'Courier Prime', monospace; font-size: 14px; background: #111827; color: #10B981; padding: 15px; border-radius: 8px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <!-- Panel Antrean (Kiri) -->
-    <div class="order-panel">
-        <h2>🔥 Antrean Masak <span>2 Antrean</span></h2>
-        
-        <div class="card urgent">
-            <div class="card-header"><span>#KNDG-1029 (Ojol)</span><span style="color:#ef4444;">🔴 Telat (12 Menit)</span></div>
-            <div class="item-list">3x Koyo Chikuro Original<br><span style="font-size:14px; color:#9ca3af;">Catatan: Bumbu pisah ya bang</span></div>
-            <button class="btn btn-green" onclick="this.parentElement.style.display='none'">Selesai Dimasak</button>
-        </div>
+<script>
+    let DATABASE_INVENTARIS = {
+        "RM-AYAM": { nama: "Dada Ayam Giling", stok: 5000, satuan: "gr" },
+        "RM-KEJU": { nama: "Keju Lumer",       stok: 1000, satuan: "gr" },
+        "RM-KMSN": { nama: "Kemasan Kertas",   stok: 200,  satuan: "pcs" },
+        "RM-TELUR":{ nama: "Telur Ayam",       stok: 50,   satuan: "butir" },
+        "RM-TEH":  { nama: "Teh Seduh",        stok: 3000, satuan: "ml" }
+    };
+    const DATABASE_MENU = [
+        { id: "M01", nama: "Koyo Chikuro Original", harga: 10000, resep: { "RM-AYAM": 50, "RM-KMSN": 1 } },
+        { id: "M02", nama: "Koyo Chikuro Cheese", harga: 15000, resep: { "RM-AYAM": 50, "RM-KEJU": 15, "RM-KMSN": 1 } },
+        { id: "M03", nama: "Nasi Telur Crispy", harga: 8000, resep: { "RM-TELUR": 1, "RM-KMSN": 1 } },
+        { id: "M04", nama: "Es Teh Sojo", harga: 3000, resep: { "RM-TEH": 250 } }
+    ];
+</script>
 
-        <div class="card">
-            <div class="card-header"><span>#KNDG-1030 (Dine-in)</span><span style="color:#10B981;">🟢 Baru (2 Menit)</span></div>
-            <div class="item-list">1x Nasi Telur Crispy<br>1x Es Teh Sojo</div>
-            <button class="btn btn-green" onclick="this.parentElement.style.display='none'">Selesai Dimasak</button>
-        </div>
-    </div>
-
-    <!-- Panel Kontrol (Kanan) -->
-    <div class="tools-panel">
-        <h2>⚙️ Kontrol Dapur</h2>
-        <button class="btn btn-red" onclick="document.getElementById('modal-wastage').style.display='flex'">🗑️ Lapor Bahan Rusak (Wastage)</button>
-        <button class="btn btn-blue" onclick="bukaModalOpname()">📝 Hitung Stok (Tutup Toko)</button>
-        
-        <div class="loss-journal">
-            <h3>Jurnal Beban Kerugian Harian</h3>
-            <div id="journal-list"><div style="color: #6b7280; font-size: 12px; text-align: center; margin-top: 50px;">Belum ada kerugian tercatat.</div></div>
-            <div style="border-top: 1px solid #374151; margin-top: 15px; padding-top: 10px; display: flex; justify-content: space-between; font-weight: bold;">
-                <span>TOTAL KERUGIAN:</span>
-                <span id="total-loss-hari-ini" style="color:#ef4444;">Rp0</span>
-            </div>
+<div class="main-content">
+    <div class="top-nav">
+        <div class="brand">🚀 KONDANG POS</div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <div id="printer-indicator" class="printer-status status-off">🔴 Printer Disconnected</div>
+            <button class="btn btn-blue" onclick="hubungkanPrinter()">🔗 Connect Bluetooth</button>
+            <button class="btn btn-red" onclick="bukaGudang()">📦 Cek Stok Gudang</button>
         </div>
     </div>
-
-    <!-- Modal 1: WASTAGE -->
-    <div class="modal-overlay" id="modal-wastage">
-        <div class="modal-content red-theme">
-            <h3>Laporan Barang Buangan</h3>
-            <div class="form-group">
-                <label>Pilih Bahan Baku</label>
-                <select id="waste-item" class="kitchen-input">
-                    <option value="RM-01" data-hpp="40">Ayam Giling (Gram)</option>
-                    <option value="RM-02" data-hpp="100">Keju Lumer (Gram)</option>
-                </select>
-            </div>
-            <div class="form-group"><label>Jumlah Dibuang (Angka)</label><input type="number" id="waste-qty" class="kitchen-input"></div>
-            <div class="form-group">
-                <label>Alasan</label>
-                <select id="waste-reason" class="kitchen-input">
-                    <option>Gosong / Salah Masak</option><option>Jatuh / Tumpah</option><option>Basi / Expired</option>
-                </select>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn" style="background: #374151; color: white;" onclick="document.getElementById('modal-wastage').style.display='none'">Batal</button>
-                <button class="btn btn-red" style="margin-bottom: 0;" onclick="simpanWastage()">Catat Kerugian</button>
-            </div>
-        </div>
+    <div class="menu-area">
+        <div class="category-title">Menu Utama</div>
+        <div class="menu-grid" id="menu-grid-container"></div>
     </div>
+</div>
 
-    <!-- Modal 2: BLIND OPNAME (INNOVATION) -->
-    <div class="modal-overlay" id="modal-opname">
-        <div class="modal-content">
-            <h3>Blind Opname (Hitung Fisik)</h3>
-            <p style="font-size: 12px; color:#9ca3af; margin-top:-10px; line-height:1.5;">Timbang bahan baku yang tersisa di dapur sekarang. Sistem akan mencocokkan otomatis dengan data penjualan (Auto-Deduct).</p>
-            
-            <div class="form-group">
-                <label>Pilih Bahan Baku yang Ditimbang</label>
-                <select id="opname-item" class="kitchen-input">
-                    <option value="" disabled selected>-- Pilih Bahan --</option>
-                    <!-- SIMULASI: Sistem rahasia berekspektasi sisa ayam adalah 2500 gram -->
-                    <option value="RM-01" data-hpp="40" data-expected="2500">Ayam Giling (Gram)</option>
-                    <option value="RM-02" data-hpp="100" data-expected="800">Keju Lumer (Gram)</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Hasil Timbangan Aktual (Fisik Asli)</label>
-                <input type="number" id="opname-qty" class="kitchen-input" placeholder="Berapa gram sisanya?">
-            </div>
-
-            <div class="alert-box" id="opname-alert">
-                <span>⚠️ PERINGATAN SELISIH STOK (KEBOCORAN)</span>
-                <div id="alert-msg" style="font-size: 13px; color: white; margin-top:5px;">Ayam kurang 400 gram dari sistem!</div>
-                <div class="amount" id="alert-loss">Kerugian: Rp16.000</div>
-                <span style="margin-top: 8px; color: #fbbf24;">Laporan ini otomatis dikirim ke Owner!</span>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 20px;" id="btn-opname-group">
-                <button class="btn" style="background: #374151; color: white;" onclick="tutupOpname()">Batal</button>
-                <button class="btn btn-blue" style="margin-bottom: 0;" onclick="eksekusiOpname()">Kirim Laporan Tutup Toko</button>
-            </div>
-        </div>
+<div class="sidebar-cart">
+    <div class="cart-header">
+        <span>Pesanan Saat Ini</span>
+        <button class="btn btn-red" style="padding: 5px 10px; font-size: 12px;" onclick="kosongkanCart()">🗑️ Hapus</button>
     </div>
+    <div class="cart-items" id="cart-list"></div>
+    <div class="cart-footer">
+        <div class="total-row"><span>Total:</span><span id="cart-total" style="color: var(--primary);">Rp0</span></div>
+        <button class="btn btn-green" style="width: 100%; padding: 20px; font-size: 18px;" onclick="prosesPembayaran()">💵 BAYAR & CETAK STRUK</button>
+    </div>
+</div>
 
-    <script>
-        let totalKerugianHarian = 0;
-        function formatRp(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
+<div class="modal" id="modal-gudang">
+    <div class="modal-box">
+        <h2 style="margin-top:0; color:var(--dark);">📦 Live Inventory Status</h2>
+        <p style="font-size:13px; color:#6b7280;">Stok terpotong otomatis saat bayar ditekan (Auto-Deduct).</p>
+        <div class="inventory-list" id="inventory-list-content"></div>
+        <button class="btn btn-blue" style="width:100%; margin-top:20px;" onclick="document.getElementById('modal-gudang').style.display='none'">Tutup</button>
+    </div>
+</div>
 
-        function simpanWastage() {
-            let select = document.getElementById("waste-item");
-            let qty = parseFloat(document.getElementById("waste-qty").value);
-            let reason = document.getElementById("waste-reason").value;
+<script>
+    let keranjang = [];
+    function formatRp(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
 
-            if(isNaN(qty) || qty <= 0) return alert("Masukkan jumlah!");
-            
-            let hpp = parseFloat(select.options[select.selectedIndex].getAttribute("data-hpp"));
-            let nilaiRugi = hpp * qty;
-            let nama = select.options[select.selectedIndex].text;
-            let jam = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
-
-            if(totalKerugianHarian === 0) document.getElementById("journal-list").innerHTML = "";
-            document.getElementById("journal-list").innerHTML += `<div class="log-item"><div class="log-money">-${formatRp(nilaiRugi)}</div><div style="font-weight: bold; color: white;">${nama} (${qty})</div><div style="color: #9ca3af; margin-top: 4px;">🕒 ${jam} | 🚨 ${reason}</div></div>`;
-            
-            totalKerugianHarian += nilaiRugi;
-            document.getElementById("total-loss-hari-ini").innerText = formatRp(totalKerugianHarian);
-            
-            let opnameOption = document.querySelector(`#opname-item option[value="${select.value}"]`);
-            if(opnameOption) {
-                let currentExpected = parseFloat(opnameOption.getAttribute("data-expected"));
-                opnameOption.setAttribute("data-expected", currentExpected - qty);
+    function renderMenu() {
+        const grid = document.getElementById("menu-grid-container");
+        grid.innerHTML = "";
+        DATABASE_MENU.forEach(menu => {
+            let bisaBikin = true;
+            for (let bahanId in menu.resep) {
+                if (DATABASE_INVENTARIS[bahanId].stok < menu.resep[bahanId]) { bisaBikin = false; break; }
             }
+            let div = document.createElement("div");
+            div.className = `menu-card ${bisaBikin ? '' : 'disabled'}`;
+            div.innerHTML = `<div><div class="m-name">${menu.nama}</div><div class="m-price">${formatRp(menu.harga)}</div></div><div class="m-stock">${bisaBikin ? '🟢 Tersedia' : '🔴 Bahan Habis!'}</div>`;
+            if(bisaBikin) { div.onclick = () => tambahKeCart(menu); }
+            grid.appendChild(div);
+        });
+    }
 
-            document.getElementById("modal-wastage").style.display = "none";
-            document.getElementById("waste-qty").value = "";
+    function tambahKeCart(menu) {
+        let ada = keranjang.find(item => item.id === menu.id);
+        if(ada) { ada.qty++; } else { keranjang.push({ ...menu, qty: 1 }); }
+        renderCart();
+    }
+
+    function ubahQty(id, delta) {
+        let item = keranjang.find(i => i.id === id);
+        if(item) {
+            item.qty += delta;
+            if(item.qty <= 0) keranjang = keranjang.filter(i => i.id !== id);
         }
+        renderCart();
+    }
 
-        function bukaModalOpname() {
-            document.getElementById("modal-opname").style.display = "flex";
-            document.getElementById("opname-alert").style.display = "none";
-            document.getElementById("btn-opname-group").style.display = "flex";
-            document.getElementById("opname-qty").value = "";
-            document.getElementById("opname-item").selectedIndex = 0;
+    function kosongkanCart() { keranjang = []; renderCart(); }
+
+    function renderCart() {
+        const list = document.getElementById("cart-list");
+        let total = 0;
+        if(keranjang.length === 0) {
+            list.innerHTML = `<div style="text-align: center; color: #9ca3af; margin-top: 50px; font-size: 14px;">Keranjang Kosong</div>`;
+            document.getElementById("cart-total").innerText = "Rp0";
+            return;
         }
+        list.innerHTML = "";
+        keranjang.forEach(item => {
+            let subtotal = item.qty * item.harga;
+            total += subtotal;
+            list.innerHTML += `<div class="cart-item"><div class="ci-info"><span class="ci-name">${item.nama}</span><span class="ci-price">${formatRp(subtotal)}</span></div><div class="qty-control"><button class="qty-btn" onclick="ubahQty('${item.id}', -1)">-</button><span class="qty-num">${item.qty}</span><button class="qty-btn" onclick="ubahQty('${item.id}', 1)">+</button></div></div>`;
+        });
+        document.getElementById("cart-total").innerText = formatRp(total);
+    }
 
-        function tutupOpname() { document.getElementById("modal-opname").style.display = "none"; }
+    function bukaGudang() {
+        let html = "";
+        for (let key in DATABASE_INVENTARIS) {
+            let brg = DATABASE_INVENTARIS[key];
+            let color = brg.stok < 100 ? '#ef4444' : '#10B981';
+            html += `<div>[${key}] ${brg.nama}: <span style="color:${color}">${brg.stok} ${brg.satuan}</span></div>`;
+        }
+        document.getElementById("inventory-list-content").innerHTML = html;
+        document.getElementById("modal-gudang").style.display = "flex";
+    }
 
-        function eksekusiOpname() {
-            let select = document.getElementById("opname-item");
-            let aktualQty = parseFloat(document.getElementById("opname-qty").value);
-            
-            if(select.selectedIndex === 0 || isNaN(aktualQty)) return alert("Pilih bahan dan masukkan hasil timbangan!");
+    let printCharacteristic = null;
+    async function hubungkanPrinter() {
+        try {
+            const device = await navigator.bluetooth.requestDevice({
+                acceptAllDevices: true,
+                optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', 'e7810a71-73ae-499d-8c15-faa9aef0c3f2'] 
+            });
+            const server = await device.gatt.connect();
+            const services = await server.getPrimaryServices();
+            let printerService = services.find(s => s.uuid.startsWith('000018f0') || s.uuid.startsWith('e7810a71')) || services[0];
+            const characteristics = await printerService.getCharacteristics();
+            printCharacteristic = characteristics.find(c => c.properties.write);
 
-            let expectedQty = parseFloat(select.options[select.selectedIndex].getAttribute("data-expected"));
-            let hpp = parseFloat(select.options[select.selectedIndex].getAttribute("data-hpp"));
-            let nama = select.options[select.selectedIndex].text;
-            let selisih = aktualQty - expectedQty;
-
-            if (selisih === 0) {
-                alert("Laporan Terkirim. Stok Balance (Aman)!");
-                tutupOpname();
-            } else if (selisih < 0) {
-                let kerugianUang = Math.abs(selisih) * hpp;
-                document.getElementById("alert-msg").innerText = `⚠️ FISIK KURANG! Sistem = ${expectedQty}, Fisik = ${aktualQty} (Selisih: ${selisih})`;
-                document.getElementById("alert-loss").innerText = `Uang Menguap: ${formatRp(kerugianUang)}`;
-                
-                document.getElementById("opname-alert").style.display = "block";
-                document.getElementById("btn-opname-group").style.display = "none";
-                
-                if(totalKerugianHarian === 0) document.getElementById("journal-list").innerHTML = "";
-                document.getElementById("journal-list").innerHTML += `<div class="log-item" style="border-left-color: #f59e0b;"><div class="log-money" style="color:#f59e0b;">-${formatRp(kerugianUang)}</div><div style="font-weight: bold; color: white;">Selisih Opname: ${nama}</div><div style="color: #9ca3af; margin-top: 4px;">🕵️ Kurang ${Math.abs(selisih)}</div></div>`;
-                
-                totalKerugianHarian += kerugianUang;
-                document.getElementById("total-loss-hari-ini").innerText = formatRp(totalKerugianHarian);
-
-                setTimeout(() => { alert("Terdapat selisih stok! Investigasi akan dilakukan oleh Owner."); tutupOpname(); }, 4000);
-            } else {
-                alert(`⚠️ FISIK BERLEBIH! (Selisih +${selisih}). Laporan dikirim ke owner untuk evaluasi porsi koki.`);
-                tutupOpname();
+            if(printCharacteristic) {
+                let ind = document.getElementById("printer-indicator");
+                ind.className = "printer-status status-on";
+                ind.innerText = "🟢 Printer " + device.name + " Connected";
+                alert("Printer Berhasil Terhubung!");
             }
+        } catch (error) {
+            alert("Gagal konek printer. Pastikan Bluetooth aktif, printer menyala, dan browser diizinkan akses Bluetooth.");
         }
-    </script>
+    }
+
+    async function prosesPembayaran() {
+        if(keranjang.length === 0) return alert("Keranjang Kosong!");
+        keranjang.forEach(item => {
+            for(let bahanId in item.resep) {
+                DATABASE_INVENTARIS[bahanId].stok -= (item.resep[bahanId] * item.qty);
+            }
+        });
+        renderMenu();
+        await cetakStrukFisik();
+        alert("Pembayaran Berhasil! Stok Gudang otomatis terpotong.");
+        kosongkanCart();
+    }
+
+    async function cetakStrukFisik() {
+        if (!printCharacteristic) {
+            alert("Printer belum terkoneksi. Transaksi tetap sukses, tapi struk tidak tercetak fisik.");
+            return;
+        }
+        let totalTagihan = 0;
+        let receiptText = "\x1B\x40\x1B\x61\x01KONDANGJAJAN\nMakan Praktis & Lezat\n--------------------------------\n\x1B\x61\x00";
+        keranjang.forEach(item => {
+            let subtotal = item.qty * item.harga;
+            totalTagihan += subtotal;
+            receiptText += `${item.nama}\n${item.qty} x ${item.harga} = ${subtotal}\n`;
+        });
+        receiptText += `--------------------------------\n\x1B\x61\x02TOTAL: Rp ${totalTagihan}\n\n\x1B\x61\x01Terima Kasih!\n\n\n\n`;
+        
+        receiptText = receiptText.replace(/\x([0-9A-Fa-f]{2})/g, function() {
+            return String.fromCharCode(parseInt(arguments[1], 16));
+        }).replace(/\n/g, '
+');
+
+        let encoder = new TextEncoder();
+        let data = encoder.encode(receiptText);
+        
+        try {
+            let chunkSize = 512;
+            for (let i = 0; i < data.length; i += chunkSize) {
+                await printCharacteristic.writeValue(data.slice(i, i + chunkSize));
+            }
+        } catch(e) { alert("Gagal mencetak struk: " + e); }
+    }
+
+    window.onload = renderMenu;
+</script>
 </body>
 </html>
