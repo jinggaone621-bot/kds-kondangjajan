@@ -47,6 +47,7 @@
 </head>
 <body>
 
+<!-- DATABASE AREA -->
 <script>
     let DATABASE_INVENTARIS = {
         "RM-AYAM": { nama: "Dada Ayam Giling", stok: 5000, satuan: "gr" },
@@ -55,6 +56,7 @@
         "RM-TELUR":{ nama: "Telur Ayam",       stok: 50,   satuan: "butir" },
         "RM-TEH":  { nama: "Teh Seduh",        stok: 3000, satuan: "ml" }
     };
+    
     const DATABASE_MENU = [
         { id: "M01", nama: "Koyo Chikuro Original", harga: 10000, resep: { "RM-AYAM": 50, "RM-KMSN": 1 } },
         { id: "M02", nama: "Koyo Chikuro Cheese", harga: 15000, resep: { "RM-AYAM": 50, "RM-KEJU": 15, "RM-KMSN": 1 } },
@@ -99,6 +101,7 @@
     </div>
 </div>
 
+<!-- JAVASCRIPT LOGIC -->
 <script>
     let keranjang = [];
     function formatRp(angka) { return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka); }
@@ -164,7 +167,9 @@
         document.getElementById("modal-gudang").style.display = "flex";
     }
 
+    // PRINTER ENGINE 
     let printCharacteristic = null;
+    
     async function hubungkanPrinter() {
         try {
             const device = await navigator.bluetooth.requestDevice({
@@ -206,19 +211,29 @@
             alert("Printer belum terkoneksi. Transaksi tetap sukses, tapi struk tidak tercetak fisik.");
             return;
         }
+        
         let totalTagihan = 0;
-        let receiptText = "\x1B\x40\x1B\x61\x01KONDANGJAJAN\nMakan Praktis & Lezat\n--------------------------------\n\x1B\x61\x00";
+        let receiptText = "";
+        
+        receiptText += "\x1B\x40"; 
+        receiptText += "\x1B\x61\x01"; 
+        receiptText += "KONDANGJAJAN\n";
+        receiptText += "Makan Praktis & Lezat\n";
+        receiptText += "--------------------------------\n";
+        receiptText += "\x1B\x61\x00"; 
+        
         keranjang.forEach(item => {
             let subtotal = item.qty * item.harga;
             totalTagihan += subtotal;
-            receiptText += `${item.nama}\n${item.qty} x ${item.harga} = ${subtotal}\n`;
+            receiptText += `${item.nama}\n`;
+            receiptText += `${item.qty} x ${item.harga} = ${subtotal}\n`;
         });
-        receiptText += `--------------------------------\n\x1B\x61\x02TOTAL: Rp ${totalTagihan}\n\n\x1B\x61\x01Terima Kasih!\n\n\n\n`;
         
-        receiptText = receiptText.replace(/\x([0-9A-Fa-f]{2})/g, function() {
-            return String.fromCharCode(parseInt(arguments[1], 16));
-        }).replace(/\n/g, '
-');
+        receiptText += "--------------------------------\n";
+        receiptText += "\x1B\x61\x02"; 
+        receiptText += `TOTAL: Rp ${totalTagihan}\n\n`;
+        receiptText += "\x1B\x61\x01"; 
+        receiptText += "Terima Kasih!\n\n\n\n";
 
         let encoder = new TextEncoder();
         let data = encoder.encode(receiptText);
